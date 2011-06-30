@@ -13,27 +13,21 @@ extends 'DataFlow::Proc::Converter';
 use namespace::autoclean;
 use YAML::Any;
 
-has '+policy' => (
-    'default' => sub {
-        return shift->direction eq 'CONVERT_TO' ? 'ArrayRef' : 'Scalar';
-    },
-);
+sub _policy {
+    return shift->direction eq 'CONVERT_TO' ? 'ArrayRef' : 'Scalar';
+}
 
-has '+converter_subs' => (
-    'lazy'    => 1,
-    'default' => sub {
-        my $self = shift;
-        return {
-            'CONVERT_TO' => sub {
-                return Dump($_);
-            },
-            'CONVERT_FROM' => sub {
-                return Load($_);
-            },
-        };
-    },
-    'init_arg' => undef,
-);
+sub _build_subs {
+    my $self = shift;
+    return {
+        'CONVERT_TO' => sub {
+            return Dump($_);
+        },
+        'CONVERT_FROM' => sub {
+            return Load($_);
+        },
+    };
+}
 
 __PACKAGE__->meta->make_immutable;
 
